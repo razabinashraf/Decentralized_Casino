@@ -9,6 +9,7 @@ contract Casino {
     uint256 public player_count = 0;
     uint256 public constant max_bets=100;
 
+    //Structure to store all details of players
     struct player_details {
         string player_name;
         address payable wallet;
@@ -16,14 +17,17 @@ contract Casino {
         uint256 bet_number;
     }
 
-    function send_ether(uint256 winning_no) public{
+    //Function to send ether to the winners if they have guessed the corrrect number 
+    function send_ether(uint256 winning_no) public payable{
         for(uint256 i = 0; i<players.length; i++){
             if(players[i].bet_number==winning_no){
-                players[i].wallet.transfer(total_ether/player_count);
+                players[i].wallet.transfer(10);
             }
         }
     }
 
+
+    //Function to add players to the bet, They can choose a bet amount and also betting number
     function add_player(string memory name,address payable wallet,uint256 bet_amount, uint256 bet_number) public {
         require(bet_amount >= minimum_bet);
         players.push(player_details(name,wallet,bet_amount,bet_number));
@@ -31,17 +35,16 @@ contract Casino {
         total_bets++;
         total_ether+=bet_amount;
     }
-    // Person[] public people;
 
-    // uint256 public peopleCount;
 
-    // struct Person {
-    //     string _firstName;
-    //     string _lastName;
-    // }
+    //Function to generate a random number between 1 and 10(This isnt secure though)and call the function send_ether
+    //to send ether to the winners
+    function generate_random_number() public {
+      uint256 random_number = block.number % 10 + 1; // This isn't secure
+      send_ether(random_number);
+    }
 
-    // function addPerson(string memory _firstName, string memory _lastName) public {
-    //     people.push(Person(_firstName, _lastName));
-    //     peopleCount += 1;
-    // }
+
+    //For making the contract accept ether payment from outside
+    function() external payable {}
 }
